@@ -1,62 +1,81 @@
 
-Skip to content
-All gists
-Back to GitHub
-Sign in
-Sign up
 
-Instantly share code, notes, and snippets.
-@yigitpirildak
-yigitpirildak/minimax.py
-Created 2 years ago
+def calculerscore(t):
+    # check if horizontal wins : 
+    for row in range(3):
+        if (t[row][0]==t[row][1] and t[row][1]==t[row][2]):
+            if t[row][0]=="x":
+                return 10
+            elif t[row][0]=="o":
+                return -10
+    #check if vertical wins : 
+    for col in range(3):
+        if (t[0][col]==t[1][col] and t[1][col]==t[2][col]):
+            if t[0][col]=="x":
+                return 10
+            elif t[0][col]=="o":
+                return -10
+    # checking diagonals :
+    if t[0][0] == t[1][1] and t[1][1]==t[2][2] :
+        if t[0][0]=="x":
+            return 10
+        elif t[0][0]=="o":
+            return -10
+    if t[0][2] == t[1][1] and t[1][1]==t[2][0] :
+        if t[0][2]=="x":
+            return 10
+        elif t[0][2]=="o":
+            return -10
+    # no one wins : return 0
+    return 0
 
-0
+def minmax(t,j):
+    # calculer le score du jeu en cours : 
+    score = calculerscore(t)
+    if score == 10 or score ==-10 :
+        return score
+    
+    # x = aximizing player
+    if j=='x':
+        bestScore = -1000
+        for i in range(3):
+            for j in range(3):
+                # if the place is free : 
+                if (t[i][j]=='_'):
+                    t[i][j]='x'
+                    bestScore = max (bestScore,minmax(t,'o'))
+                    t[i][j] = '_'
+        return bestScore
+    else: 
+        bestScore = 1000
+        for i in range(3):
+            for j in range(3):
+                # if the place is free : 
+                if (t[i][j]=='_'):
+                    t[i][j]='o'
+                    bestScore = min (bestScore,minmax(t,'o'))
+                    t[i][j] = '_'
+        return bestScore
 
-    0
+def meilleurMouvement(t):
+    bestScore=-10000
+    bestMove=(-1,-1)
+    for i in range(3):
+        for j in range(3):
+            # if the place is free : 
+            if (t[i][j]=='_'):
+                t[i][j]='x'
+                nextScore = minmax(t,'o')
+                if nextScore>bestScore :
+                    bestMove = (i,j)
+                    bestScore = nextScore
+    print( "Meilleur choix possible : ",bestMove, bestScore)
+    return bestMove
 
-Code
-Revisions 1
-minimax demonstration
-minimax.py
-def make_best_move():
-    bestScore = -math.inf
-    bestMove = None
-    for move in ticTacBoard.get_possible_moves():
-        ticTacBoard.make_move(move)
-        score = minimax(False, aiPlayer, ticTacBoard)
-        ticTacBoard.undo()
-        if (score > bestScore):
-            bestScore = score
-            bestMove = move
-    ticTacBoard.make_move(bestMove)
+table  = [
+    ['x','o','o'],
+    ['_','_','_'],
+    ['_','_','x']]
 
-def minimax(isMaxTurn, maximizerMark, board):
-    state = board.get_state()
-    if (state is State.DRAW):
-        return 0
-    elif (state is State.OVER):
-        return 1 if board.get_winner() is maximizerMark else -1
-
-    scores = []
-    for move in board.get_possible_moves():
-        board.make_move(move)
-        scores.append(minimax(not isMaxTurn, maximizerMark, board))
-        board.undo()
-
-    return max(scores) if isMaxTurn else min(scores)
-to join this conversation on GitHub. Already have an account? Sign in to comment
-
-    © 2022 GitHub, Inc.
-
-    Terms
-    Privacy
-    Security
-    Status
-    Docs
-    Contact GitHub
-    Pricing
-    API
-    Training
-    Blog
-    About
-
+bestMove = meilleurMouvement(table)
+print ("The besto move is ROW=%i COL%i" % (bestMove[0],bestMove[1]))
